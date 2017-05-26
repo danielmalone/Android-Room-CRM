@@ -19,8 +19,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
     private RecyclerView.Adapter mAdapter;
-    private ArrayList<String> mContacts;
-    private Contact mContact;
+    private List<Contact> mContacts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,20 +38,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        mContact = new Contact();
-        mContact.setFirst_name("Jake");
-        mContact.setLast_name("Smith");
-        mContact.setEmail("jake@example.com");
-
         mContacts = new ArrayList<>();
 
-        new InsertContacts().execute();
+//        new InsertContacts().execute();
         new GetContacts().execute();
+    }
 
-        for (int i = 0; i < 50; i++) {
-            mContacts.add("Daniel # " + i);
-        }
-
+    private void showRecyclerView() {
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this);
         mAdapter = new MainAdapter(mContacts);
@@ -65,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... params) {
             AppDatabase db = databaseConnection();
-            db.contactDao().insertAll(mContact);
+//            db.contactDao().insertAll(mContact);
             return null;
         }
     }
@@ -75,8 +67,14 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... params) {
             AppDatabase db = databaseConnection();
-            List<Contact> mContacts = db.contactDao().getAll();
+            mContacts = db.contactDao().getAll();
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            showRecyclerView();
         }
     }
 
